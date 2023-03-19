@@ -72,35 +72,50 @@ curl -v -X GET "https://dapi.kakao.com/v2/search/blog" \
 - CLIENT -> blogsearch SERVER -> KAKAO API SERVER
 
 ## blogsearch API 명세서
-- URL : https://localhost:10080/v1/search/blog
+###1. URL : https://localhost:10080/v1/search/blog
+- 설명 : 블로그 검색 API
 - method : POST
+   ###REQUEST
+   |NAME|TYPE|DESCRIPTION|REQUIRED|
+   |:---|:---|:----------|:-------|
+   |query|String|검색 질의어.<br> 특정 블로그 글만 검색하고 싶은 경우, 블로그 url과 검색어를 공백('')구분자로 넣을 수 있음.|O|
+   |sort|String|'accuracy'(정확도순) 또는 'recency'(최신순)|X|
+   |page|Integer|페이지 번호, 1~50, default 1|X|
+   |size|Integer|페이지 당 문서 수, 1~50, default 10|X|
+   
+   ###RESPONSE
+   |NAME|NAME|NAME|TYPE|DESCRIPTION|
+   |:---|:---|:---|:---|:----------|
+   |resultCode|-|-|String|응답 코드
+   |resultMessage|-|-|String|응답 메세지
+   |resultData|-|-|Object|응답 데이터
+   |-|meta|-|Object|meta data
+   |-|-|total_count|Integer|검색된 문서 수
+   |-|-|pageable_count|Integer|total_count 중 노출 가능한 문서 수
+   |-|-|is_end|Boolean|현제 페에지가 마지막 페이지인지 여부, 값이 false 이면 page를 증가시켜 다음 페이지 요청 가능.
+   |-|documents|-|Array|문서 객체를 담은 배열
+   |-|-|title|String|블로그 글 제목
+   |-|-|contents|String|블로그 글 요약
+   |-|-|url|String|블로그 글 URL
+   |-|-|blogname|String|블로그의 이름
+   |-|-|thumbnail|String|검색 시스템에서 추출한 대표 미리보기 이미지 URL, 미리보기 크기 및 화질은 변경될 수 있음.
+   |-|-|datetime|Datetime|블로그 글 작성 시간, ISO 8601 [YYYY]-[MM]-[DD]T[hh]:[mm]:[ss].000+[tz]
 
-###REQUEST
-|NAME|TYPE|DESCRIPTION|REQUIRED|
-|:---|:---|:----------|:-------|
-|query|String|검색 질의어.<br> 특정 블로그 글만 검색하고 싶은 경우, 블로그 url과 검색어를 공백('')구분자로 넣을 수 있음.|O|
-|sort|String|'accuracy'(정확도순) 또는 'recency'(최신순)|X|
-|page|Integer|페이지 번호, 1~50, default 1|X|
-|size|Integer|페이지 당 문서 수, 1~50, default 10|X|
+### 2. URL : https://localhost:10080/v1/get/top/searched
+- 설명 : 인기 검색어 조회 API
+- method : GET
+  ###REQUEST PARAMETER
+  없음
 
-###RESPONSE
-|NAME|NAME|NAME|TYPE|DESCRIPTION|
-|:---|:---|:---|:---|:----------|
-|resultCode|-|-|String|응답 코드
-|resultMessage|-|-|String|응답 메세지
-|resultData|-|-|Object|응답 데이터
-|-|meta|-|Object|meta data
-|-|-|total_count|Integer|검색된 문서 수
-|-|-|pageable_count|Integer|total_count 중 노출 가능한 문서 수
-|-|-|is_end|Boolean|현제 페에지가 마지막 페이지인지 여부, 값이 false 이면 page를 증가시켜 다음 페이지 요청 가능.
-|-|documents|-|Array|문서 객체를 담은 배열
-|-|-|title|String|블로그 글 제목
-|-|-|contents|String|블로그 글 요약
-|-|-|url|String|블로그 글 URL
-|-|-|blogname|String|블로그의 이름
-|-|-|thumbnail|String|검색 시스템에서 추출한 대표 미리보기 이미지 URL, 미리보기 크기 및 화질은 변경될 수 있음.
-|-|-|datetime|Datetime|블로그 글 작성 시간, ISO 8601 [YYYY]-[MM]-[DD]T[hh]:[mm]:[ss].000+[tz]
-
+  ###RESPONSE
+  |NAME|NAME|TYPE|DESCRIPTION|
+     |:---|:---|:---|:----------|
+  |resultCode|-|String|응답 코드
+  |resultMessage|-|String|응답 메세지
+  |resultData|-|Array|응답 데이터
+  |-|keyword|String|검색어
+  |-|searched_cnt|Integer|검색된 횟수
+  
 ## 응답코드, 응답 메세지
 - 0000 : SUCCESS
 - 5000 : BAD REQUEST
