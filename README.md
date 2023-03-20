@@ -13,8 +13,14 @@
 5. 인기 검색어를 관리한다.
    1. 사용자가 많이 검색한 순으로 10개 키워드를 제공한다.
    2. 검색어 별로 검색된 횟수도 표기한다.
+6. 추후 카카오 API 이외에 새로운 검색 소스가 추가될 수 있음을 고려해야 합니다.
+7. 트래픽이 많고, 저장되어 있는 데이터가 많음을 염두에 둔 구현 
+8. 동시성 이슈가 발생할 수 있는 부분을 염두에 둔 구현 (예시. 키워드 별로 검색된 횟수의 정확도)
+9. 카카오 블로그 검색 API에 장애가 발생한 경우, 네이버 블로그 검색 API를 통해 데이터 제공
+   * 네이버 블로그 검색 API: https://developers.naver.com/docs/serviceapi/search/blog/blog.md
 
 ## 검색 소스 API 명세서
+### 카카오 API
 - URL : https://dapi.kakao.com/v2/search/blog
 - method : GET
 - HTTP/1.1
@@ -65,6 +71,54 @@ curl -v -X GET "https://dapi.kakao.com/v2/search/blog" \
     "datetime": "2017-05-07T18:50:07.000+09:00"
     }
   ]
+}
+```
+### 네이버 API
+- URL : https://openapi.naver.com/v1/search/blog.json
+- method : GET
+- HTTPS
+- Authorization : X-Naver-Client-Id, X-Naver-Client-Secret
+
+###REQUEST PARAMETER
+|NAME|TYPE|DESCRIPTION|REQUIRED|
+|:---|:---|:----------|:-------|
+|query|String|검색어. UTF-8 인코딩 필수|O|
+|display|Integer|한 번에 표시할 검색 결과 개수 1(기본값)~100|X|
+|start|Integer|검색 시작 위치 1(기본값)~100|X|
+|sort|String|sim : 정확도순 내림차순(기본값), date : 날짜순 내림차순|X|
+####sample
+```markdown
+curl  "https://openapi.naver.com/v1/search/blog.xml?query=%EB%A6%AC%EB%B7%B0&display=10&start=1&sort=sim" \
+-H "X-Naver-Client-Id: {애플리케이션 등록 시 발급받은 클라이언트 아이디 값}" \
+-H "X-Naver-Client-Secret: {애플리케이션 등록 시 발급받은 클라이언트 시크릿 값}" -v
+```
+###RESPONSE
+|NAME|NAME|TYPE|DESCRIPTION|
+|:---|:---|:---|:----------|
+|확|인|후|작성|
+####sample
+
+```json
+{
+  "channel": {
+    "title": "Naver Open API - blog::리뷰",
+    "link": "http://search.naver.com",
+    "description": "Naver Search Result",
+    "lastBuildDate": "Mon, 26 Sep 2016 10:39:37 +0900",
+    "total": 8714891,
+    "start": 1,
+    "display": 10,
+    "items": [
+      {
+        "title": "",
+        "link": "",
+        "description": "",
+        "bloggername": "",
+        "bloggerlink": "",
+        "postdate": ""
+      }
+    ]
+  }
 }
 ```
 
@@ -120,3 +174,15 @@ curl -v -X GET "https://dapi.kakao.com/v2/search/blog" \
 - 0000 : SUCCESS
 - 5000 : BAD REQUEST
 - 9000 : INTERNAL SERVER ERROR
+
+
+## 테이블 명세서
+###SRCH_KEY_WORD_INFO
+|COLUMN|TYPE|LENGTH|DEFAULT|NULLABLE|DESCRIPTION|
+|:---|:---|:---|:----------|:-------|:-------|
+|seq_no|BIGINT|20|AUTOINCREMENT|X|일련 번호
+|service_id|VARCHAR|10|''|X|호출 API ID|
+|key_word|VARCHAR|20|''|X|검색어|
+|count|INT|11|1|X|검색된 횟수|
+|mod_date|DATETIME|-|CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP|X|수정 날짜 시간|
+|in_date|DATETIME|-|CURRENT_TIMESTAMP|X|입력 날짜 시간|
