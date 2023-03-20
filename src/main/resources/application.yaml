@@ -1,12 +1,14 @@
+debug: true
+
 server:
-  port: 10080
-  servlet:
-    context-path: /
-    encoding:
-      charset: UTF-8
-      enabled: true
-      force: true
+  port: 9090
   error:
-    path: /error
     whitelabel:
       enabled: false
+
+springdoc:
+  api-docs:
+    groups:
+      enabled: true
+  swagger-ui:
+    path: /swagger-ui
