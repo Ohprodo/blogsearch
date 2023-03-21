@@ -1,30 +1,27 @@
 package com.company.blogsearch.dto.kakao;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import com.company.blogsearch.dto.kakao.client.KakaoApiCallResponseDto;
+import com.company.blogsearch.dto.naver.client.NaverApiCallResponseDto;
+import lombok.*;
+
+import java.util.List;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class KakaoSearchResponseDto {
-    private KkoMetaData meta;
-    private KkoDocument documents;
+    private KakaoMeta meta;
+    private List<KakaoDocument> documents;
 
-    private static class KkoMetaData {
-        private Integer total_count;
-        private Integer pageable_count;
-        private Boolean is_end;
+    public KakaoSearchResponseDto(KakaoApiCallResponseDto clientResponseDto) {
+        this.meta = clientResponseDto.getMeta();
+        this.documents = clientResponseDto.getDocuments();
     }
 
-    private static class KkoDocument {
-        private String title;
-        private String contents;
-        private String url;
-        private String blogname;
-        private String thumbnail;
-        private String datetime;
+    public KakaoSearchResponseDto(NaverApiCallResponseDto naverClientResponseDto) {
+
+        this.meta.setIsEnd(naverClientResponseDto.getStart() == 50);
+        this.meta.setTotalCount(naverClientResponseDto.getTotal());
     }
 }
