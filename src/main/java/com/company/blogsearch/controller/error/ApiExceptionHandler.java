@@ -3,6 +3,7 @@ package com.company.blogsearch.controller.error;
 import com.company.blogsearch.constant.ErrorCode;
 import com.company.blogsearch.dto.ErrorResponse;
 import com.company.blogsearch.exception.GeneralException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import javax.validation.ConstraintViolationException;
 
+@Slf4j
 @RestControllerAdvice(annotations = RestController.class)
 public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
@@ -43,9 +45,10 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     private ResponseEntity<Object> handleExceptionInternal(Exception e, ErrorCode errorCode, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        log.info("[ApiExceptionHandler] Exception message : {}", e.getMessage());
         return super.handleExceptionInternal(
                 e,
-                ErrorResponse.of(errorCode.getResultCode(), errorCode.getResultMessage(e)),
+                ErrorResponse.of(errorCode.getResultCode(), errorCode.getResultMessage()),
                 headers,
                 status,
                 request
