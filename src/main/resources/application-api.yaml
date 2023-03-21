@@ -1,0 +1,10 @@
+api:
+  kakao:
+    base-url: "https://dapi.kakao.com/v2"
+    search-api: "/search/blog"
+    rest-api-key: "943ac509ef4f954959e2263d5fec12a2"
+  naver:
+    base-url: "https://openapi.naver.com/v1"
+    search-api: "/search/blog.json"
+    client-id: "TmxYQA1FczOABgGY5x2V"
+    client-secret: "LBlysAunje"
