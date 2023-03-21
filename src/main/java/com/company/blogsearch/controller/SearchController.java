@@ -3,18 +3,38 @@ package com.company.blogsearch.controller;
 import com.company.blogsearch.dto.CommonResponse;
 import com.company.blogsearch.dto.kakao.KakaoSearchRequestDto;
 import com.company.blogsearch.dto.kakao.KakaoSearchResponseDto;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.company.blogsearch.dto.kakao.SearchedKeyWordMeta;
+import com.company.blogsearch.service.KeyWordCheckService;
+import com.company.blogsearch.service.SearchService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
-
-@RestController("/v1")
+@Tag(name="검색 API")
+@RequestMapping("/v1")
+@RestController
 public class SearchController {
 
-    @PostMapping("/search/blog")
-    public CommonResponse<KakaoSearchResponseDto> searchBlog(@Valid KakaoSearchRequestDto kakaoSearchRequestDto) {
-        return CommonResponse.of(KakaoSearchResponseDto.builder().build());
+    private final SearchService searchService;
+    private final KeyWordCheckService keyWordCheckService;
+
+    public SearchController(SearchService searchService, KeyWordCheckService keyWordCheckService) {
+        this.searchService = searchService;
+        this.keyWordCheckService = keyWordCheckService;
     }
 
+    @Operation(summary = "블로그 검색 API", description = "카카오 API를 연동한 블로그 검색 API")
+    @PostMapping("/search/blog")
+    public CommonResponse<KakaoSearchResponseDto> searchBlog(@Valid @RequestBody KakaoSearchRequestDto kakaoSearchRequestDto) {
+        return CommonResponse.of(searchService.searchBlogByQuery(kakaoSearchRequestDto));
+    }
+
+    @Operation(summary = "인기검색어 TOP 10 API", description = "인기검색어 TOP 10")
+    @GetMapping("/search/top/keyword")
+    public CommonResponse<List<SearchedKeyWordMeta>> seasrchTopTenKeyWord() {
+        return CommonResponse.of(keyWordCheckService.getMostSearchedKeyWord());
+    }
 }
