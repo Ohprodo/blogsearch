@@ -19,6 +19,84 @@
 9. 카카오 블로그 검색 API에 장애가 발생한 경우, 네이버 블로그 검색 API를 통해 데이터 제공
    * 네이버 블로그 검색 API: https://developers.naver.com/docs/serviceapi/search/blog/blog.md
 
+
+## FLOW
+- CLIENT -> blogsearch SERVER -> KAKAO API SERVER
+
+## SWAGGER
+- URL : http://localhost:9090/swagger-ui
+
+## H2 CONSOLE
+- URL : http://localhost:9090/h2-console
+- JDBC URL : jdbc:he:mem:testdb
+- User Name : sa
+- Password : 공백
+
+## blogsearch API 명세서
+###1. URL : https://localhost:10080/v1/search/blog
+- 설명 : 블로그 검색 API
+- method : POST
+  ###REQUEST
+  |NAME|TYPE|DESCRIPTION|REQUIRED|
+     |:---|:---|:----------|:-------|
+  |query|String|검색 질의어.<br> 특정 블로그 글만 검색하고 싶은 경우, 블로그 url과 검색어를 공백('')구분자로 넣을 수 있음.|O|
+  |sort|String|'accuracy'(정확도순) 또는 'recency'(최신순)|O|
+  |page|Integer|페이지 번호, 1~50, default 1|O|
+  |size|Integer|페이지 당 문서 수, 1~50, default 10|O|
+
+  ###RESPONSE
+  |NAME|NAME|NAME|TYPE|DESCRIPTION|
+     |:---|:---|:---|:---|:----------|
+  |resultCode|-|-|String|응답 코드
+  |resultMessage|-|-|String|응답 메세지
+  |resultData|-|-|Object|응답 데이터
+  |-|meta|-|Object|meta data
+  |-|-|total_count|Integer|검색된 문서 수
+  |-|-|pageable_count|Integer|total_count 중 노출 가능한 문서 수
+  |-|-|is_end|Boolean|현제 페에지가 마지막 페이지인지 여부, 값이 false 이면 page를 증가시켜 다음 페이지 요청 가능.
+  |-|documents|-|Array|문서 객체를 담은 배열
+  |-|-|title|String|블로그 글 제목
+  |-|-|contents|String|블로그 글 요약
+  |-|-|url|String|블로그 글 URL
+  |-|-|blogname|String|블로그의 이름
+  |-|-|thumbnail|String|검색 시스템에서 추출한 대표 미리보기 이미지 URL, 미리보기 크기 및 화질은 변경될 수 있음.
+  |-|-|datetime|Datetime|블로그 글 작성 시간, ISO 8601 [YYYY]-[MM]-[DD]T[hh]:[mm]:[ss].000+[tz]
+
+### 2. URL : https://localhost:10080/v1/get/top/searched
+- 설명 : 인기 검색어 조회 API
+- method : GET
+  ###REQUEST PARAMETER
+  없음
+
+  ###RESPONSE
+  |NAME|NAME|TYPE|DESCRIPTION|
+       |:---|:---|:---|:----------|
+  |resultCode|-|String|응답 코드
+  |resultMessage|-|String|응답 메세지
+  |resultData|-|Array|응답 데이터
+  |-|keyword|String|검색어
+  |-|searched_cnt|Long|검색된 횟수
+
+## 응답코드, 응답 메세지
+- 0000 : SUCCESS
+- 5000 : BAD REQUEST
+- 9000 : INTERNAL SERVER ERROR
+- 9001 : KAKAO HTTP CONNECTION ERROR
+- 9002 : NAVER HTTP CONNECTION ERROR
+- 9003 : DB INSERT ERROR
+- 9004 : DB SELECT ERROR
+- 9005 : DB UPDATE ERROR
+
+## 테이블 명세서
+###SRCH_KEY_WORD_INFO
+|COLUMN|TYPE|KEY|LENGTH|DEFAULT|NULLABLE|DESCRIPTION|
+|:---|:---|:---|:---|:----------|:-------|:-------|
+|seq_no|BIGINT|PK|20|AUTOINCREMENT|X|일련 번호
+|key_word|VARCHAR|IDX|20|''|X|검색어|
+|srch_cnt|BIGINT|-|20|1|X|검색된 횟수|
+|mod_date|DATETIME|-|-|CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP|X|수정 날짜 시간|
+|in_date|DATETIME|-|-|CURRENT_TIMESTAMP|X|입력 날짜 시간|
+
 ## 검색 소스 API 명세서
 ### 카카오 API
 - URL : https://dapi.kakao.com/v2/search/blog
@@ -95,7 +173,17 @@ curl  "https://openapi.naver.com/v1/search/blog.xml?query=%EB%A6%AC%EB%B7%B0&dis
 ###RESPONSE
 |NAME|NAME|TYPE|DESCRIPTION|
 |:---|:---|:---|:----------|
-|확|인|후|작성|
+|total|-|Integer|총 개수|
+|start|-|Integer|시작 위치(페이지)|
+|display|-|Integer|display item 개수|
+|lastBuildDate|-|String|최근 업데이트 날짜|
+|items|-|Array|컨텐츠 배열|
+|-|title|String|제목|
+|-|link|String|게시물 링크|
+|-|description|String|설명|
+|-|bloggername|String|블로거 이름|
+|-|bloggerlink|String|블로거 링크|
+|-|postdate|String|포스트 날짜|
 ####sample
 
 ```json
@@ -121,68 +209,3 @@ curl  "https://openapi.naver.com/v1/search/blog.xml?query=%EB%A6%AC%EB%B7%B0&dis
   }
 }
 ```
-
-## FLOW
-- CLIENT -> blogsearch SERVER -> KAKAO API SERVER
-
-## blogsearch API 명세서
-###1. URL : https://localhost:10080/v1/search/blog
-- 설명 : 블로그 검색 API
-- method : POST
-   ###REQUEST
-   |NAME|TYPE|DESCRIPTION|REQUIRED|
-   |:---|:---|:----------|:-------|
-   |query|String|검색 질의어.<br> 특정 블로그 글만 검색하고 싶은 경우, 블로그 url과 검색어를 공백('')구분자로 넣을 수 있음.|O|
-   |sort|String|'accuracy'(정확도순) 또는 'recency'(최신순)|X|
-   |page|Integer|페이지 번호, 1~50, default 1|X|
-   |size|Integer|페이지 당 문서 수, 1~50, default 10|X|
-   
-   ###RESPONSE
-   |NAME|NAME|NAME|TYPE|DESCRIPTION|
-   |:---|:---|:---|:---|:----------|
-   |resultCode|-|-|String|응답 코드
-   |resultMessage|-|-|String|응답 메세지
-   |resultData|-|-|Object|응답 데이터
-   |-|meta|-|Object|meta data
-   |-|-|total_count|Integer|검색된 문서 수
-   |-|-|pageable_count|Integer|total_count 중 노출 가능한 문서 수
-   |-|-|is_end|Boolean|현제 페에지가 마지막 페이지인지 여부, 값이 false 이면 page를 증가시켜 다음 페이지 요청 가능.
-   |-|documents|-|Array|문서 객체를 담은 배열
-   |-|-|title|String|블로그 글 제목
-   |-|-|contents|String|블로그 글 요약
-   |-|-|url|String|블로그 글 URL
-   |-|-|blogname|String|블로그의 이름
-   |-|-|thumbnail|String|검색 시스템에서 추출한 대표 미리보기 이미지 URL, 미리보기 크기 및 화질은 변경될 수 있음.
-   |-|-|datetime|Datetime|블로그 글 작성 시간, ISO 8601 [YYYY]-[MM]-[DD]T[hh]:[mm]:[ss].000+[tz]
-
-### 2. URL : https://localhost:10080/v1/get/top/searched
-- 설명 : 인기 검색어 조회 API
-- method : GET
-  ###REQUEST PARAMETER
-  없음
-
-  ###RESPONSE
-  |NAME|NAME|TYPE|DESCRIPTION|
-     |:---|:---|:---|:----------|
-  |resultCode|-|String|응답 코드
-  |resultMessage|-|String|응답 메세지
-  |resultData|-|Array|응답 데이터
-  |-|keyword|String|검색어
-  |-|searched_cnt|Integer|검색된 횟수
-  
-## 응답코드, 응답 메세지
-- 0000 : SUCCESS
-- 5000 : BAD REQUEST
-- 9000 : INTERNAL SERVER ERROR
-
-
-## 테이블 명세서
-###SRCH_KEY_WORD_INFO
-|COLUMN|TYPE|LENGTH|DEFAULT|NULLABLE|DESCRIPTION|
-|:---|:---|:---|:----------|:-------|:-------|
-|seq_no|BIGINT|20|AUTOINCREMENT|X|일련 번호
-|service_id|VARCHAR|10|''|X|호출 API ID|
-|key_word|VARCHAR|20|''|X|검색어|
-|count|INT|11|1|X|검색된 횟수|
-|mod_date|DATETIME|-|CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP|X|수정 날짜 시간|
-|in_date|DATETIME|-|CURRENT_TIMESTAMP|X|입력 날짜 시간|
