@@ -1,5 +1,5 @@
 # blogsearch
-## jar 파일 경로 build/libs/blogsearch-0.0.1-SNAPSHOT-plain.jar
+## jar 파일 링크 : https://github.com/Ohprodo/blogsearch/tree/main/build/libs
 
 ## 서비스 개요
 - 카카오 API를 활용한 블로그 검색 서비스. 
