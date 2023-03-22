@@ -33,7 +33,7 @@
 - Password : 공백
 
 ## blogsearch API 명세서
-###1. URL : https://localhost:10080/v1/search/blog
+###1. URL : https://localhost:9090/v1/search/blog
 - 설명 : 블로그 검색 API
 - method : POST
   ###REQUEST
@@ -62,7 +62,7 @@
   |-|-|thumbnail|String|검색 시스템에서 추출한 대표 미리보기 이미지 URL, 미리보기 크기 및 화질은 변경될 수 있음.
   |-|-|datetime|Datetime|블로그 글 작성 시간, ISO 8601 [YYYY]-[MM]-[DD]T[hh]:[mm]:[ss].000+[tz]
 
-### 2. URL : https://localhost:10080/v1/get/top/searched
+### 2. URL : https://localhost:9090/v1/get/top/searched
 - 설명 : 인기 검색어 조회 API
 - method : GET
   ###REQUEST PARAMETER
