@@ -4,7 +4,6 @@ import com.company.blogsearch.dto.CommonResponse;
 import com.company.blogsearch.dto.kakao.KakaoSearchRequestDto;
 import com.company.blogsearch.dto.kakao.KakaoSearchResponseDto;
 import com.company.blogsearch.dto.kakao.SearchedKeyWordMeta;
-import com.company.blogsearch.service.KeyWordCheckService;
 import com.company.blogsearch.service.SearchService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -19,11 +18,9 @@ import java.util.List;
 public class SearchController {
 
     private final SearchService searchService;
-    private final KeyWordCheckService keyWordCheckService;
 
-    public SearchController(SearchService searchService, KeyWordCheckService keyWordCheckService) {
+    public SearchController(SearchService searchService) {
         this.searchService = searchService;
-        this.keyWordCheckService = keyWordCheckService;
     }
 
     @Operation(summary = "블로그 검색 API", description = "카카오 API를 연동한 블로그 검색 API")
@@ -35,6 +32,6 @@ public class SearchController {
     @Operation(summary = "인기검색어 TOP 10 API", description = "인기검색어 TOP 10")
     @GetMapping("/search/top/keyword")
     public CommonResponse<List<SearchedKeyWordMeta>> seasrchTopTenKeyWord() {
-        return CommonResponse.of(keyWordCheckService.getMostSearchedKeyWord());
+        return CommonResponse.of(searchService.getMostSearchedKeyWord());
     }
 }

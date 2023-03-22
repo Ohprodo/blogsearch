@@ -2,8 +2,10 @@ package com.company.blogsearch.exception;
 
 import com.company.blogsearch.constant.ErrorCode;
 import lombok.Getter;
+import lombok.ToString;
 
 @Getter
+@ToString
 public class GeneralException extends RuntimeException{
     private final ErrorCode errorCode;
 

@@ -10,5 +10,5 @@ import lombok.*;
 @AllArgsConstructor
 public class SearchedKeyWordMeta {
     private String keyWord;
-    private Long count;
+    private Long srchCnt;
 }

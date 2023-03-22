@@ -1,8 +1,9 @@
 package com.company.blogsearch.constant;
 
 public class Const {
-    public static final int DEFAULT_PAGE = 1;
-    public static final int DEFAULT_SIZE = 10;
+    public static final int DEFAULT_SEARCH_PAGE = 1;
+    public static final int DEFAULT_SEARCH_SIZE = 10;
+    public static final int DEFAULT_LIMIT = 10;
 
     public static final String KAKAO_HEADER_KEY = "Authorization";
     public static final String KAKAO_HEADER_VALUE_PREFIX = "KakaoAK ";
