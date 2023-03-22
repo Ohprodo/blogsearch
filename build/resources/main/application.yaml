@@ -1,0 +1,40 @@
+debug: false
+
+server:
+  port: 9090
+  error:
+    whitelabel:
+      enabled: false
+
+springdoc:
+  api-docs:
+    enabled: true
+  writer-with-default-pretty-printer: true
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui
+    display-request-duration: true
+    defaultModelsExpandDepth: -1
+
+spring:
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:testdb
+    username: sa
+    password:
+    initialize: true
+    schema: classpath:schema.sql
+    data: classpath:import.sql
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  profiles:
+    include:
+      - api
